@@ -12,7 +12,7 @@ class Program
     static async Task Main(string[] args)
     {
         // Intro message
-        Console.WriteLine("~ Tagging System Prototype ~\n");
+        Console.WriteLine("~ AI Marketing Co-Pilot Tagging System Prototype ~\n");
 
         // Get private keys 
         var config = new ConfigurationBuilder()
