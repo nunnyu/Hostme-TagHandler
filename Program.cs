@@ -11,6 +11,9 @@ class Program
 {
     static async Task Main(string[] args)
     {
+        // Allows cyrillic 
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
         // Intro message
         Console.WriteLine("~ AI Marketing Co-Pilot Tagging System Prototype ~\n");
 
