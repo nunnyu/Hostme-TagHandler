@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 namespace HostmeTagHandler;
 public class Receiver
 {
+    public List<ReceiptInfo> receiptInfoList { get; private set; }
     private string connectionString;
     private string queueName;
     private static int messagesToView = 3;
@@ -18,6 +19,7 @@ public class Receiver
     {
         this.connectionString = config.GetConnectionString("ServiceBusIn") ?? throw new ArgumentNullException("Connection string is missing.");
         this.queueName = config["ServiceBusSettings:QueueName"] ?? throw new ArgumentNullException("Connection string is missing.");
+        this.receiptInfoList = new List<ReceiptInfo>();
     }
 
     // Receive messages
@@ -93,14 +95,14 @@ public class Receiver
 
                     itemList.Add(new Item(productId, productName, amount, totalPrice, course, time));
                 }
-
-                // Print all items in the list
-                foreach(var item in itemList)
-                {
-                    Console.WriteLine(item);
-                }
+            }
+            else
+            {
+                Console.WriteLine("Error: receipt json is null.");
             }
 
+            ReceiptInfo receiptInfo = new ReceiptInfo(itemList);
+            receiptInfoList.Add(receiptInfo);
         }
         catch (HttpRequestException e)
         {

@@ -26,5 +26,8 @@ class Program
         // Receive message 
         var receiver = new Receiver(config);
         await receiver.StartReceivingMessagesAsync();
+
+        // Create a new message bundle to analyze
+        MessageBundle messageBundle = new MessageBundle(receiver.receiptInfoList);
     }
 }
