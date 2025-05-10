@@ -91,7 +91,7 @@ public class Receiver
                     int amount = item?["amount"]?.GetValue<int>() ?? 0;
                     double totalPrice = item?["totalPrice"]?.GetValue<double>() ?? 0.0;
                     int course = item?["course"]?.GetValue<int>() ?? 0;
-                    DateTime time = item?["creationDate"]?.GetValue<DateTime>() ?? new DateTime(2024, 1, 1, 12, 0, 0);
+                    DateTime time = item?["creationDate"]?.GetValue<DateTime>() ?? DateTime.MinValue; // Nonsensical date for an "Unknown". 
 
                     itemList.Add(new Item(productId, productName, amount, totalPrice, course, time));
                 }
@@ -103,6 +103,8 @@ public class Receiver
 
             ReceiptInfo receiptInfo = new ReceiptInfo(itemList);
             receiptInfoList.Add(receiptInfo);
+
+            Console.WriteLine("All messages received!\n");
         }
         catch (HttpRequestException e)
         {

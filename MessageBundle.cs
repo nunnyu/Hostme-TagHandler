@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,9 +17,13 @@ public class MessageBundle
     public override string ToString()
     {
         string toReturn = "";
+
+        int index = 1;
         foreach (var receiptInfo in receiptInfoList)
         {
+            toReturn += ("-- Receipt Info: " + index + " --\n");
             toReturn += (receiptInfo + "\n");
+            index++;
         }
 
         return toReturn;
@@ -68,9 +73,22 @@ public class ReceiptInfo
         this.Tags = new List<OrderTag>();
     }
 
+    public string getTags()
+    {
+        string output = "";
+
+        foreach (var tag in Tags)
+        {
+            output += tag.ToString() + "; ";
+        }
+
+        return output;
+    }
+
     public override string ToString()
     {
         string toReturn = "";
+
         foreach (var item in items)
         {
             toReturn += (item + "\n");

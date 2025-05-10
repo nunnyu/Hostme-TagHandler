@@ -29,5 +29,13 @@ class Program
 
         // Create a new message bundle to analyze
         MessageBundle messageBundle = new MessageBundle(receiver.receiptInfoList);
+
+        Console.WriteLine(messageBundle);
+
+        // Analyze with Azure OpenAI
+        OpenAI openAI = new OpenAI(config);
+        string tagData = await openAI.AnalyzeMessageBundle(messageBundle);
+
+        Console.WriteLine(tagData);
     }
 }
