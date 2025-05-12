@@ -14,7 +14,7 @@ using System.Text.Json;
 namespace HostmeTagHandler;
 class OpenAI
 {
-    private string deploymentName = "o3-mini"; // The model is the same as the name
+    private string deploymentName = "gpt-4.1"; // The model is the same as the name
     private string apiKey;
     private Uri endpoint;
     private AzureOpenAIClient azureClient;
@@ -32,7 +32,7 @@ class OpenAI
         chatClient = azureClient.GetChatClient(deploymentName);
     }
 
-    public async Task<string> AnalyzeMessageBundle(MessageBundle messageBundle)
+    public string AnalyzeMessageBundle(MessageBundle messageBundle)
     {
         if (messageBundle == null)
         {
@@ -40,61 +40,44 @@ class OpenAI
                 nameof(messageBundle));
         }
 
-        ReceiptInfo receiptInfo = messageBundle.receiptInfoList[0];
-
-        string tagInfo = receiptInfo.getTags(); // This will give the AI tags to organize the data by 
+        string tagInfo = new ReceiptInfo(new List<Item>()).getTagCategories(); // This will give the AI tags to organize the data by 
         string bundleText = messageBundle.ToString(); // Contains all the receipts 
         string directions = "Respond with a JSON formatted list containing every tag that fits each receipt. " +
             "Create a new list for every receipt, and label each list \"receipt_x\" where x is the current receipt number. " +
-            "Ignore nonsensical dates and prices. \n";
+            "Ignore nonsensical dates and prices. \n"; // Directions for what to do with our data
         string prompt = tagInfo + "\n" + bundleText + "\n" + directions;
 
-        return await GetResponseAsync(prompt);
+        return GetResponse(prompt);
     }
 
 
-    public async Task<string> GetResponseAsync(string prompt)
+    public string GetResponse(string prompt)
     {
         try
         {
             Console.WriteLine("Analyzing received info...\n");
 
-            var messages = new List<ChatMessage>
+            var requestOptions = new ChatCompletionOptions
             {
-                // Send prompt to OpenAI
-                new UserChatMessage(@"" + prompt)
+                MaxOutputTokenCount = 4096,
+                Temperature = 1.0f,
+                TopP = 1.0f,
             };
 
-            // Create chat completion options
-            var options = new ChatCompletionOptions();
-
-            try
+            List<ChatMessage> messages = new List<ChatMessage>
             {
-                // Create the chat completion request
-                ChatCompletion completion = await chatClient.CompleteChatAsync(messages, options);
+                new SystemChatMessage("You are an assistant, respond only in JSON."),
+                new UserChatMessage(prompt),
+            };
 
-                // Print the response
-                if (completion != null)
-                {
-                    string output = JsonSerializer.Serialize(completion, new JsonSerializerOptions() { WriteIndented = true });
-                    return output;
-                }
-                else
-                {
-                    Console.WriteLine("No response received.\n");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Completion error: {ex.Message}");
-            }
+            var response = chatClient.CompleteChat(messages, requestOptions);
+            return response.Value.Content[0].Text;
+
         }
         catch (Exception ex)
         {
             return $"Error: {ex.Message}";
         }
-
-        return "";
     }
 
 }

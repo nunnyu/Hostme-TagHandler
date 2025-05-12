@@ -32,7 +32,7 @@ public class MessageBundle
 
 public class ReceiptInfo
 {
-    private enum OrderTag
+    private enum TagCategories
     {
         // Food Preferences
         MeatLover, 
@@ -65,24 +65,19 @@ public class ReceiptInfo
     }
 
     public List<Item> items;
-    private List<OrderTag> Tags;
+    private List<TagCategories> Tags;
 
     public ReceiptInfo(List<Item> items)
     {
         this.items = items;
-        this.Tags = new List<OrderTag>();
+        this.Tags = new List<TagCategories>();
     }
 
-    public string getTags()
+    public string getTagCategories()
     {
-        string output = "";
+        string categories = string.Join(", ", Enum.GetNames(typeof(TagCategories)));
 
-        foreach (var tag in Tags)
-        {
-            output += tag.ToString() + "; ";
-        }
-
-        return output;
+        return categories;
     }
 
     public override string ToString()
