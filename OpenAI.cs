@@ -44,7 +44,7 @@ class OpenAI
         string bundleText = messageBundle.ToString(); // Contains all the receipts 
         string directions = "Respond with a JSON formatted list containing every tag that fits each receipt. " +
             "Create a new list for every receipt, and label each list \"receipt_x\" where x is the current receipt number. " +
-            "Ignore nonsensical dates and prices. \n"; // Directions for what to do with our data
+            "Ignore nonsensical dates and prices. The tags should represent the receipt as a whole, and not individual items. \n"; // Directions for what to do with our data
         string prompt = tagInfo + "\n" + bundleText + "\n" + directions;
 
         return GetResponse(prompt);
@@ -66,7 +66,8 @@ class OpenAI
 
             List<ChatMessage> messages = new List<ChatMessage>
             {
-                new SystemChatMessage("You are an assistant, respond only in JSON."),
+                new SystemChatMessage("You are a food categorization assistant. Given receipt items, return accurate tags based only on what is actually mentioned in the receipt. " +
+                "Do NOT guess. Only apply tags that clearly match dish names. Respond only in JSON."),
                 new UserChatMessage(prompt),
             };
 
