@@ -53,11 +53,11 @@ public class ReceiptInfo
         RedWineFan,
         WhiskeyFan,
         BeerFan,
-        NonAlcoholicPreference,
+        CoffeeFan,
         CocktailFan,
 
         // Time-Based Behavior
-        EarlyBird,
+        Morning,
         Lunch,
         Dinner,
         LateNight,
