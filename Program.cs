@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.IO;
 using Microsoft.Extensions.Configuration;
+using Azure.AI.Translation.Text;
 
 namespace HostmeTagHandler;
 class Program
@@ -39,9 +40,19 @@ class Program
 
             // Analyze with Azure OpenAI
             OpenAI openAI = new OpenAI(config);
-            string tagData = openAI.AnalyzeMessageBundle(messageBundle);
+            string tagDataJSON = openAI.AnalyzeMessageBundle(messageBundle);
 
-            Console.WriteLine(tagData);
+            // Create a dictionary with receipt data 
+            var dict = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(tagDataJSON);
+
+            List<List<string>> tagLists = new List<List<string>>();
+            if (dict != null)
+            {
+                tagLists = dict.Values.ToList();
+            }
+
+            messageBundle.TagReceipts(tagLists);
+            messageBundle.PrintTags();
         }
         else
         {
@@ -54,8 +65,6 @@ class Program
 
             OpenAI openAI = new OpenAI(config);
             string tagData = openAI.GetResponse(testPrompt);
-
-            Console.WriteLine(tagData);
         }
     }
 }

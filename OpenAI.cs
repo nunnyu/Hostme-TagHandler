@@ -40,7 +40,7 @@ class OpenAI
                 nameof(messageBundle));
         }
 
-        string tagInfo = new ReceiptInfo(new List<Item>()).getTagCategories(); // This will give the AI tags to organize the data by 
+        string tagInfo = new ReceiptInfo("", new List<Item>()).GetTagCategories(); // This will give the AI tags to organize the data by 
         string bundleText = messageBundle.ToString(); // Contains all the receipts 
         string directions = "Respond with a JSON formatted list containing every tag that fits each receipt. " +
             "Create a new list for every receipt, and label each list \"receipt_x\" where x is the current receipt number. " +
@@ -55,7 +55,7 @@ class OpenAI
     {
         try
         {
-            Console.WriteLine("Analyzing received info...\n");
+            Console.WriteLine("Analyzing received info...\n\n\n");
 
             var requestOptions = new ChatCompletionOptions
             {

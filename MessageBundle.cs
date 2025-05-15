@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,8 @@ using System.Threading.Tasks;
 namespace HostmeTagHandler;
 public class MessageBundle
 {
-    public List<ReceiptInfo> receiptInfoList = new List<ReceiptInfo>();
+    public List<ReceiptInfo> receiptInfoList {  get; set; }
+    
     public MessageBundle(List<ReceiptInfo> receiptInfoList)
     {
         this.receiptInfoList = receiptInfoList;
@@ -27,6 +29,24 @@ public class MessageBundle
         }
 
         return toReturn;
+    }
+
+    public void PrintTags()
+    {
+        foreach (var receiptInfo in receiptInfoList)
+        {
+            receiptInfo.PrintTags();
+        }
+    }
+
+    public void TagReceipts(List<List<string>> lolot)
+    {
+        int receiptIndex = 0;
+        foreach (var list in lolot)
+        {
+            this.receiptInfoList[receiptIndex].AddTags(list);
+            receiptIndex++;
+        }
     }
 }
 
@@ -64,29 +84,71 @@ public class ReceiptInfo
         Weekend,
     }
 
-    public List<Item> items;
+    public List<Item> items { get; set; }
     private List<TagCategories> Tags;
+    private string email;
 
-    public ReceiptInfo(List<Item> items)
+    public ReceiptInfo(string email, List<Item> items)
     {
+        this.email = email;
         this.items = items;
         this.Tags = new List<TagCategories>();
     }
 
-    public string getTagCategories()
+    public string GetTagCategories()
     {
         string categories = string.Join(", ", Enum.GetNames(typeof(TagCategories)));
 
         return categories;
     }
 
+    public void AddTags(List<string> tags)
+    {
+        List<TagCategories> enumTags = tags
+        .Select(tag => Enum.Parse<TagCategories>(tag, ignoreCase: true))
+        .ToList();
+
+        foreach (TagCategories tagCategory in enumTags)
+        {
+            Tags.Add(tagCategory);
+        }
+    }
+
+    public void PrintTags()
+    {
+        Console.WriteLine("-- Tagging --");
+        Console.WriteLine("Email: " + this.email);
+
+        int index = 0;
+
+        foreach (var tag in Tags)
+        {
+            Console.Write(tag.ToString());
+
+            if (index != Tags.Count - 1)
+            {
+                Console.Write(", ");
+            }
+
+            index++;
+        }
+
+        Console.WriteLine("\n");
+    }
+
     public override string ToString()
     {
-        string toReturn = "";
+        string toReturn = "Email: " + this.email + "\n\n";
 
         foreach (var item in items)
         {
             toReturn += (item + "\n");
+        }
+
+        if (this.items.Count == 0)
+        {
+            toReturn += "No items ordered.";
+            toReturn += "\n";
         }
 
         return toReturn;

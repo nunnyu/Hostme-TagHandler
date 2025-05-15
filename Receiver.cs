@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Amqp.Framing;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 
 namespace HostmeTagHandler;
 public class Receiver
@@ -48,23 +49,30 @@ public class Receiver
                 msgCount++;
 
                 string body = message.Body.ToString();
+
+                //Console.WriteLine(body);
+
                 var json = JsonNode.Parse(body);
                 var bookingId = json?["BookingId"]?.ToString();
+                var email = json?["Booking"]?["Email"]?.ToString() ?? "Missing email";
 
                 // Console output
                 Console.WriteLine("Message ID: " + message.MessageId);
                 Console.WriteLine("Booking ID: " + bookingId);
+                Console.WriteLine("Identifier: " + email);
 
                 if (bookingId != null)
                 {
-                    await this.ReceiveReceiptInfo(bookingId);
+                    await this.ReceiveReceiptInfo(email, bookingId);
                 }
             }
         }
+
+        Console.WriteLine("All messages received!\n");
     }
 
     // Receive receipt info
-    private async Task ReceiveReceiptInfo(string bookingId)
+    private async Task ReceiveReceiptInfo(string email, string bookingId)
     {
         string receiptUrl = $"https://hostmeprod.blob.core.windows.net/bookingsnapshots/{bookingId}/receipt.json";
 
@@ -76,7 +84,7 @@ public class Receiver
             JsonNode? json = JsonNode.Parse(jsonString);
 
             Console.WriteLine($"Receipt Info for Booking ID {bookingId}:\n");
-            // Console.WriteLine(json + "\n");
+            //Console.WriteLine(json + "\n");
 
             // Retrieve items and turn them into receipt info
             var itemsJson = json?["items"]?.AsArray();
@@ -101,10 +109,8 @@ public class Receiver
                 Console.WriteLine("Error: receipt json is null.");
             }
 
-            ReceiptInfo receiptInfo = new ReceiptInfo(itemList);
+            ReceiptInfo receiptInfo = new ReceiptInfo(email, itemList);
             receiptInfoList.Add(receiptInfo);
-
-            Console.WriteLine("All messages received!\n");
         }
         catch (HttpRequestException e)
         {
