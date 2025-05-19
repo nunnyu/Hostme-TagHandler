@@ -50,11 +50,11 @@ public class Receiver
 
                 string body = message.Body.ToString();
 
-                //Console.WriteLine(body);
+                Console.WriteLine(body);
 
                 var json = JsonNode.Parse(body);
                 var bookingId = json?["BookingId"]?.ToString();
-                var email = json?["Booking"]?["Email"]?.ToString() ?? "Missing email";
+                var email = json?["Booking"]?["Email"]?.ToString() ?? "Unknown";
 
                 // Console output
                 Console.WriteLine("Message ID: " + message.MessageId);
@@ -84,7 +84,7 @@ public class Receiver
             JsonNode? json = JsonNode.Parse(jsonString);
 
             Console.WriteLine($"Receipt Info for Booking ID {bookingId}:\n");
-            //Console.WriteLine(json + "\n");
+            Console.WriteLine(json + "\n");
 
             // Retrieve items and turn them into receipt info
             var itemsJson = json?["items"]?.AsArray();

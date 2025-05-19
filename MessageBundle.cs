@@ -85,14 +85,30 @@ public class ReceiptInfo
     }
 
     public List<Item> items { get; set; }
+    public string identifier { get; set; }
     private List<TagCategories> Tags;
-    private string email;
 
-    public ReceiptInfo(string email, List<Item> items)
+    public ReceiptInfo(string identifier, List<Item> items)
     {
-        this.email = email;
+        this.identifier = identifier;
         this.items = items;
         this.Tags = new List<TagCategories>();
+    }
+
+    public GuestProfile? BuildProfile(List<GuestProfile> allProfiles)
+    {
+        if (this.identifier != "Unknown" && this.items.Count() > 0)
+        {
+            GuestProfile profile = new GuestProfile(this.identifier);
+            List<string> tagStrings = Tags.Select(tag => tag.ToString()).ToList();
+            profile.AddOrder(tagStrings, items[0].CreationDate, items[0].TotalPrice);
+
+            return profile;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public string GetTagCategories()
@@ -117,7 +133,7 @@ public class ReceiptInfo
     public void PrintTags()
     {
         Console.WriteLine("-- Tagging --");
-        Console.WriteLine("Email: " + this.email);
+        Console.WriteLine("Identifier: " + this.identifier);
 
         int index = 0;
 
@@ -138,7 +154,7 @@ public class ReceiptInfo
 
     public override string ToString()
     {
-        string toReturn = "Email: " + this.email + "\n\n";
+        string toReturn = "Identifier: " + this.identifier + "\n\n";
 
         foreach (var item in items)
         {
