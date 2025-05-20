@@ -53,6 +53,14 @@ class Program
 
             messageBundle.TagReceipts(tagLists);
             messageBundle.PrintTags();
+
+            // Guest Profiles
+            List<GuestProfile?> listOfProfiles = messageBundle.BuildProfiles();
+
+            foreach(var profile in listOfProfiles)
+            {
+                Console.WriteLine(profile);
+            }
         }
         else
         {

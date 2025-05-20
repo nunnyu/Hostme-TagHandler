@@ -54,7 +54,7 @@ public class Receiver
 
                 var json = JsonNode.Parse(body);
                 var bookingId = json?["BookingId"]?.ToString();
-                var email = json?["Booking"]?["Email"]?.ToString() ?? "Unknown";
+                var email = json?["Booking"]?["Email"]?.ToString() ?? "anton";
 
                 // Console output
                 Console.WriteLine("Message ID: " + message.MessageId);

@@ -39,6 +39,17 @@ public class MessageBundle
         }
     }
 
+    public List<GuestProfile?> BuildProfiles()
+    {
+        List<GuestProfile?> list = new List<GuestProfile?>();
+        foreach (ReceiptInfo receiptInfo in receiptInfoList)
+        {
+            list.Add(receiptInfo.BuildProfile());
+        }
+
+        return list;
+    }
+
     public void TagReceipts(List<List<string>> lolot)
     {
         int receiptIndex = 0;
@@ -95,13 +106,21 @@ public class ReceiptInfo
         this.Tags = new List<TagCategories>();
     }
 
-    public GuestProfile? BuildProfile(List<GuestProfile> allProfiles)
+    public GuestProfile? BuildProfile()
     {
         if (this.identifier != "Unknown" && this.items.Count() > 0)
         {
             GuestProfile profile = new GuestProfile(this.identifier);
             List<string> tagStrings = Tags.Select(tag => tag.ToString()).ToList();
-            profile.AddOrder(tagStrings, items[0].CreationDate, items[0].TotalPrice);
+
+            // Total price of the order
+            double totalPrice = 0d;
+            foreach (var item in items)
+            {
+                totalPrice += item.TotalPrice;
+            }
+
+            profile.AddOrder(tagStrings, items[0].CreationDate, totalPrice);
 
             return profile;
         }

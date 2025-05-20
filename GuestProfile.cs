@@ -64,7 +64,7 @@ public class GuestProfile // Respresents aggregated data, rather than a single o
                "- Identifier: " + identifier + "\n" +
                "- Orders: " + OrderCount + "\n" +
                "- Avg Order Time: " + GetAverageOrderTime().ToString(@"hh\:mm") + "\n" +
-               "- Avg Order Price: $" + GetAverageOrderPrice().ToString("0.00") + "\n" +
-               "- Tags: " + tagsSummary;
+               "- Avg Order Price: " + GetAverageOrderPrice().ToString("0.00") + "\n" +
+               "- Tags: " + tagsSummary + "\n";
     }
 }
