@@ -14,6 +14,7 @@
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.19.0" />
     <PackageReference Include="Microsoft.Azure.Amqp" Version="2.6.11" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.4" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
   </ItemGroup>
 
 	<ItemGroup>

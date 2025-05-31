@@ -19,10 +19,12 @@ class OpenAI
     private Uri endpoint;
     private AzureOpenAIClient azureClient;
     private ChatClient chatClient;
+    private IConfiguration config;
 
 
     public OpenAI(IConfiguration config)
     {
+        this.config = config;
         apiKey = config.GetConnectionString("OpenAIKey") ?? throw new ArgumentNullException("Connection string is missing.");
         endpoint = new Uri(config.GetConnectionString("OpenAIEndpoint") ?? throw new ArgumentNullException("Connection string is missing."));
 
@@ -40,7 +42,15 @@ class OpenAI
                 nameof(messageBundle));
         }
 
-        string tagInfo = new ReceiptInfo("", new List<Item>()).GetTagCategories(); // This will give the AI tags to organize the data by 
+        DbClient db = new DbClient(config); // get all of the tags from the database, and then store them as a long list of strings 
+        var tagDict = db.GetTagDefinitions();
+
+        string tagInfo = "";
+        foreach (var tagName in tagDict.Keys)
+        {
+            tagInfo += tagName + "; ";
+        }
+
         string bundleText = messageBundle.ToString(); // Contains all the receipts 
         string directions = "Respond with a JSON formatted list containing every tag that fits each receipt. " +
             "Create a new list for every receipt, and label each list \"receipt_x\" where x is the current receipt number. " +

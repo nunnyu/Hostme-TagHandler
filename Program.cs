@@ -61,6 +61,10 @@ class Program
             {
                 Console.WriteLine(profile);
             }
+
+            var db = new DbClient(config);
+            db.Peek();
+
         }
         else
         {

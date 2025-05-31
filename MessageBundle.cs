@@ -63,47 +63,17 @@ public class MessageBundle
 
 public class ReceiptInfo
 {
-    private enum TagCategories
-    {
-        // Food Preferences
-        MeatLover, 
-        SoupFan, 
-        SteakFan,
-        SeafoodFan,
-        PlantBased,
-        GlutenFree,
-        LowCarb, 
-        ComfortFood, 
-        PastaFan,
-        SpicyFoodFan,
-        SweetsFan,
-        LuxuryFood, 
-
-        // Drink Habits
-        WhiteWineFan,
-        RedWineFan,
-        WhiskeyFan,
-        BeerFan,
-        CoffeeFan,
-        CocktailFan,
-
-        // Time-Based Behavior
-        Morning,
-        Lunch,
-        Dinner,
-        LateNight,
-        Weekend,
-    }
+    private List<string> tagCategories = new List<string>();
 
     public List<Item> items { get; set; }
     public string identifier { get; set; }
-    private List<TagCategories> Tags;
+    private List<string> Tags;
 
     public ReceiptInfo(string identifier, List<Item> items)
     {
         this.identifier = identifier;
         this.items = items;
-        this.Tags = new List<TagCategories>();
+        this.Tags = new List<string>();
     }
 
     public GuestProfile? BuildProfile()
@@ -130,20 +100,9 @@ public class ReceiptInfo
         }
     }
 
-    public string GetTagCategories()
-    {
-        string categories = string.Join(", ", Enum.GetNames(typeof(TagCategories)));
-
-        return categories;
-    }
-
     public void AddTags(List<string> tags)
     {
-        List<TagCategories> enumTags = tags
-        .Select(tag => Enum.Parse<TagCategories>(tag, ignoreCase: true))
-        .ToList();
-
-        foreach (TagCategories tagCategory in enumTags)
+        foreach (string tagCategory in tags)
         {
             Tags.Add(tagCategory);
         }

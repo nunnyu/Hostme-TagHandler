@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
 
 namespace HostmeTagHandler;
 public class GuestProfile // Respresents aggregated data, rather than a single order 
