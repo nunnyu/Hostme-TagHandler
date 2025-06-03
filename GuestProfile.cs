@@ -21,6 +21,22 @@ public class GuestProfile // Respresents aggregated data, rather than a single o
         this.identifier = identifier;
     }
 
+    public void Merge(GuestProfile other)
+    {
+        // Merge tags 
+        foreach (var tag in other.TagCounts)
+        {
+            for (int c = 0; c < tag.Value; c++)
+            {
+                AddTag(tag.Key);
+            }
+        }
+
+        TotalOrderTime += other.TotalOrderTime;
+        TotalOrderPrice += other.TotalOrderPrice;
+        OrderCount += other.OrderCount;
+    }
+
     public void AddOrder(List<string> tags, DateTime orderDateTime, double orderPrice)
     {
         foreach (string tag in tags)
