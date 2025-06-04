@@ -87,11 +87,14 @@ class Program
         foreach (var profile in profilesToDb)
         {
             Console.WriteLine(profile);
-
         }
 
+        Console.WriteLine(""); // Just to separate
+
         var db = new DbClient(config);
+
         db.Peek();
+        var tagDict = db.GetTagDefinitions();
 
         // Add profiles to the database now
         foreach (var profile in profilesToDb)
@@ -101,7 +104,22 @@ class Program
                 db.AddCustomerByEmail(profile.identifier); // Creates a new guest
             }
 
-            int guestId = db.GetGuestIdByEmail(profile.identifier);
+            int customerId = db.GetGuestIdByEmail(profile.identifier);
+
+            List<string> allTags = profile.GetAllTags(); // Get the list of tags that we want to add to the database
+            List<int> tagIds = new List<int>();
+
+            foreach (var tag in allTags)
+            {
+                if (tagDict.ContainsKey(tag)) // If this tag isn't recognized in the database, we'll just skip it for now 
+                {
+                    tagIds.Add(tagDict[tag]);
+                }
+            }
+
+            db.TagById(customerId, tagIds);
         }
+
+        db.Peek();
     }
 }

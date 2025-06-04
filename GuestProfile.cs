@@ -21,6 +21,21 @@ public class GuestProfile // Respresents aggregated data, rather than a single o
         this.identifier = identifier;
     }
 
+    // This method un-counts TagCounts, so we can have a list of tags to add to the database 
+    public List<string> GetAllTags()
+    {
+        List<string> outputList = new List<string>();
+        foreach (var tagName in TagCounts.Keys)
+        {
+            for (int i = 0; i < TagCounts[tagName]; i++)
+            {
+                outputList.Add(tagName);
+            }
+        }
+
+        return outputList;
+    }
+
     public void Merge(GuestProfile other)
     {
         // Merge tags 

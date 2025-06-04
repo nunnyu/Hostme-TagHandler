@@ -10,7 +10,7 @@ using Npgsql;
 class DbClient
 {
     string connectionString;
-    public DbClient (IConfiguration config)
+    public DbClient(IConfiguration config)
     {
         connectionString = config.GetConnectionString("Database") ?? throw new ArgumentNullException("Database connection string is missing.");
     }
@@ -60,6 +60,36 @@ class DbClient
 
         Console.WriteLine("Added " + email + " to the database.");
     }
+    public void TagById(int customerId, List<int> tagIds)
+    {
+        if (tagIds == null || tagIds.Count == 0) return;
+
+        string sql = "INSERT INTO customer_tags (customer_id, tag_definition_id) VALUES ";
+        var values = new List<string>();
+
+        for (int i = 0; i < tagIds.Count; i++)
+        {
+            values.Add($"(@cus_id, @tag_id{i})");
+        }
+
+        sql += string.Join(", ", values);
+
+        using var conn = new NpgsqlConnection(connectionString);
+        conn.Open();
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+
+        // Add shared parameter
+        cmd.Parameters.AddWithValue("cus_id", customerId);
+
+        // Add dynamic tag_id parameters
+        for (int i = 0; i < tagIds.Count; i++)
+        {
+            cmd.Parameters.AddWithValue($"tag_id{i}", tagIds[i]);
+        }
+
+        cmd.ExecuteNonQuery();
+    }
 
     public bool EmailExists(string email)
     {
@@ -72,11 +102,6 @@ class DbClient
 
         long count = (long)(cmd.ExecuteScalar() ?? 0); // if null it's not there, so 0 
         return count > 0;
-    }
-
-    public void ProfileToDb(GuestProfile profile)
-    {
-        AddCustomerByEmail(profile.identifier);
     }
 
     public int GetGuestIdByEmail(string email)
