@@ -45,6 +45,51 @@ class DbClient
         return tagDict;
     }
 
+    public Dictionary<string, int> GetCustomerTagsById(int id)
+    {
+        var tagDict = new Dictionary<string, int>();
+
+        using var conn = new NpgsqlConnection(connectionString);
+        conn.Open();
+
+        string sql = @"
+        SELECT td.tag_name, ct.tag_count
+        FROM customer_tags ct
+        JOIN tag_definitions td ON ct.tag_definition_id = td.id
+        WHERE ct.customer_id = @customerId;";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@customerId", id);
+
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            string tagName = reader.GetString(0);
+            int tagCount = reader.GetInt32(1);
+
+            tagDict[tagName] = tagCount;
+        }
+
+        return tagDict;
+    }
+
+    public string FormatTagDictionary(Dictionary<string, int> tagDict)
+    {
+        if (tagDict == null || tagDict.Count == 0)
+            return "(No tags found!)";
+
+        var sb = new StringBuilder();
+        sb.AppendLine("Customer Tag Summary:");
+
+        foreach (var kvp in tagDict.OrderByDescending(kvp => kvp.Value))
+        {
+            sb.AppendLine($"- {kvp.Key}: {kvp.Value}");
+        }
+
+        return sb.ToString();
+    }
+
+
     // Creates customer by email, and returns their id 
     public void AddCustomerByEmail(string email)
     {

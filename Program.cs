@@ -129,5 +129,14 @@ class Program
         }
 
         db.Peek();
+
+        // Example analysis, Henry! His id is 7.
+        Console.WriteLine("\n~ Analysis ~\n");
+    
+        Dictionary<string, int> henryTags = db.GetCustomerTagsById(7);
+
+        Console.WriteLine("(customer_id 7)\n" + db.FormatTagDictionary(henryTags) + "\n");
+
+        Console.WriteLine(openAI.AnalyzeDatabaseCustomer(henryTags));
     }
 }

@@ -60,6 +60,16 @@ class OpenAI
         return GetResponse(prompt);
     }
 
+    public string AnalyzeDatabaseCustomer(Dictionary<string, int> tagDict)
+    {
+        DbClient db = new DbClient(config);
+        string customerTags = db.FormatTagDictionary(tagDict); // Contains all the tag info 
+        string directions = "Respond only with a JSON object with 3 keys, primary_habit, secondary_habit, occasional_habit." +
+            "These should be a very short, but high level description of this customer based on their tag info regarding their eating habits. "; // Directions for what to do with our data
+        string prompt = directions + "\n" + customerTags;
+
+        return GetResponse(prompt);
+    }
 
     public string GetResponse(string prompt)
     {
