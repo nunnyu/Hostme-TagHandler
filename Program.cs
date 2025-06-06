@@ -61,26 +61,34 @@ class Program
 
         List<GuestProfile> profilesToDb = new List<GuestProfile>();
 
+        Console.WriteLine(listOfProfiles.Count + " profiles available.\n");
+
         foreach (var profile in listOfProfiles)
         {
+            if (profile == null)
+            {
+                continue;
+            }
+
+            var unique = true;
+
             // Check if the list already contains this profile's email in the same session
             foreach (var addedProfile in profilesToDb)
             {
-                if (profile == null)
-                {
-                    continue;
-                }
-
                 if (addedProfile.identifier == profile.identifier) // If it has the same identifier, merge them
                 {
                     addedProfile.Merge(profile);
-                }
-                else
-                {
-                    profilesToDb.Add(profile);
+                    unique = false;
                 }
             }
+
+            if (unique)
+            {
+                profilesToDb.Add(profile);
+            }
         }
+
+        Console.WriteLine(profilesToDb.Count + " profiles being updated in the database.\n");
 
         Console.WriteLine("\nMerge complete. New profiles below: \n");
 
