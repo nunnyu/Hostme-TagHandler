@@ -125,7 +125,11 @@ class Program
                 }
             }
 
+            // Apply tagging
             db.TagById(customerId, tagIds);
+
+            // Adding general customer statistics 
+            db.MetricById(profile, customerId);
         }
 
         db.Peek();

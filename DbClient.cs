@@ -105,6 +105,27 @@ class DbClient
 
         Console.WriteLine("Added " + email + " to the database.");
     }
+
+    public void MetricById(GuestProfile profile, int customerId)
+    {
+        var paidVisits = profile.OrderCount;
+        var totalSpent = profile.TotalOrderPrice;
+        string sql = "INSERT INTO customer_statistics (customer_id, paid_visits, total_spent) VALUES (@Id, @Visits, @Spent);";
+
+        using var conn = new NpgsqlConnection(connectionString);
+        conn.Open();
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+
+        cmd.Parameters.AddWithValue("Id", customerId);
+        cmd.Parameters.AddWithValue("Visits", paidVisits);
+        cmd.Parameters.AddWithValue("Spent", totalSpent);
+
+        cmd.ExecuteNonQuery();
+
+        Console.WriteLine($"Added statistics for customer #{customerId}\n");
+    }
+
     public void TagById(int customerId, List<int> tagIds)
     {
         if (tagIds == null || tagIds.Count == 0) return;
