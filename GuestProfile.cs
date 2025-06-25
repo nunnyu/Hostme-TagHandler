@@ -11,7 +11,6 @@ public class GuestProfile // Respresents aggregated data, rather than a single o
 {
     public string identifier { get; set; }
     public Dictionary<string, int> TagCounts { get; set; } = new Dictionary<string, int>();
-
     public TimeSpan TotalOrderTime { get; set; } = TimeSpan.Zero;
     public double TotalOrderPrice { get; set; } = 0;
     public int OrderCount { get; set; } = 0;

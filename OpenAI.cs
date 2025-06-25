@@ -60,6 +60,24 @@ class OpenAI
         return GetResponse(prompt);
     }
 
+    // Creates a JSON search query as criteria for sorting guests that would like a certain dish
+    // Takes in the tag dictionary, in order to see what the user would want 
+    public string SearchQuery(Dictionary<string, int> tagDict, string request)
+    {
+        string tagInfo = "";
+
+        foreach (var tagName in tagDict.Keys)
+        {
+            tagInfo += tagName + "; ";
+        }
+
+        string prompt = "Convert the following natural language request into a structured search query JSON. The keys should be: " +
+            "'tags', 'minAvgSpent', and 'minVisitFrequency'. Tags: " + tagInfo + ". You cannot keep anything null, unless the request is nonsensical." +
+            "Create the best logical values! Request: " + request;
+
+        return GetResponse(prompt);
+    }
+
     public string AnalyzeDatabaseCustomer(Dictionary<string, int> tagDict)
     {
         DbClient db = new DbClient(config);

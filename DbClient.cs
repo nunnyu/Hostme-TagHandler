@@ -110,7 +110,12 @@ class DbClient
     {
         var paidVisits = profile.OrderCount;
         var totalSpent = profile.TotalOrderPrice;
-        string sql = "INSERT INTO customer_statistics (customer_id, paid_visits, total_spent) VALUES (@Id, @Visits, @Spent);";
+        string sql = "INSERT INTO customer_statistics (customer_id, paid_visits, total_spent) " +
+            "VALUES (@Id, @Visits, @Spent)" +
+            "ON CONFLICT (customer_id)" +
+            "DO UPDATE SET" +
+            "   paid_visits = customer_statistics.paid_visits + EXCLUDED.paid_visits, " +
+            "   total_spent = customer_statistics.total_spent + EXCLUDED.total_spent;"; // just add them if the guest is already in the database 
 
         using var conn = new NpgsqlConnection(connectionString);
         conn.Open();
@@ -126,19 +131,23 @@ class DbClient
         Console.WriteLine($"Added statistics for customer #{customerId}\n");
     }
 
-    public void TagById(int customerId, List<int> tagIds)
+    public void TagById(int customerId, Dictionary<int, int> tagIdDict)
     {
-        if (tagIds == null || tagIds.Count == 0) return;
+        if (tagIdDict == null || tagIdDict.Count == 0) return;
 
-        string sql = "INSERT INTO customer_tags (customer_id, tag_definition_id) VALUES ";
+        string sql = "INSERT INTO customer_tags (customer_id, tag_definition_id, tag_count) VALUES ";
         var values = new List<string>();
 
-        for (int i = 0; i < tagIds.Count; i++)
+        for (int i = 0; i < tagIdDict.Count; i++)
         {
-            values.Add($"(@cus_id, @tag_id{i})");
+            values.Add($"(@cus_id, @tag_id{i}, @count{i})");
         }
 
         sql += string.Join(", ", values);
+
+        sql += @"
+            ON CONFLICT (customer_id, tag_definition_id)
+            DO UPDATE SET tag_count = customer_tags.tag_count + EXCLUDED.tag_count;";
 
         using var conn = new NpgsqlConnection(connectionString);
         conn.Open();
@@ -149,9 +158,12 @@ class DbClient
         cmd.Parameters.AddWithValue("cus_id", customerId);
 
         // Add dynamic tag_id parameters
-        for (int i = 0; i < tagIds.Count; i++)
+        int c = 0;
+        foreach (var kvp in tagIdDict)
         {
-            cmd.Parameters.AddWithValue($"tag_id{i}", tagIds[i]);
+            cmd.Parameters.AddWithValue($"tag_id{c}", kvp.Key);
+            cmd.Parameters.AddWithValue($"count{c}", kvp.Value);
+            c++;
         }
 
         cmd.ExecuteNonQuery();

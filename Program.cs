@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Azure.AI.Translation.Text;
+using System.Security.Cryptography;
 
 namespace HostmeTagHandler;
 class Program
@@ -114,14 +115,14 @@ class Program
 
             int customerId = db.GetGuestIdByEmail(profile.identifier);
 
-            List<string> allTags = profile.GetAllTags(); // Get the list of tags that we want to add to the database
-            List<int> tagIds = new List<int>();
+            Dictionary<string, int> allTags = profile.TagCounts; // Get the list of tags that we want to add to the database
+            Dictionary<int, int> tagIds = new();
 
             foreach (var tag in allTags)
             {
-                if (tagDict.ContainsKey(tag)) // If this tag isn't recognized in the database, we'll just skip it for now 
+                if (tagDict.ContainsKey(tag.Key)) // If this tag isn't recognized in the database, we'll just skip it for now 
                 {
-                    tagIds.Add(tagDict[tag]);
+                    tagIds.Add(tagDict[tag.Key], tag.Value);
                 }
             }
 
@@ -142,5 +143,11 @@ class Program
         Console.WriteLine("(customer_id 7)\n" + db.FormatTagDictionary(henryTags) + "\n");
 
         Console.WriteLine(openAI.AnalyzeDatabaseCustomer(henryTags));
+
+        // Search Query Test
+        string request = "стейк мраморной говядины";
+        string output = openAI.SearchQuery(tagDict, request);
+
+        Console.WriteLine($"Search query for {request}: {output}");
     }
 }
