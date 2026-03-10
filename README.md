@@ -27,7 +27,7 @@ Built with .NET 8.0, the application implements a modular architecture with the 
 ## Technologies and Services
 
 - **Framework**: .NET 8.0 (C#)
-- **Cloud Services**: Azure Service Bus, Azure OpenAI Service, Azure Blob Storage
+- **Cloud Services**: Azure Service Bus, Azure OpenAI Service
 - **Database**: PostgreSQL with Dapper ORM
 - **AI/ML**: Azure OpenAI GPT-4.1 for natural language processing and categorization
 - **Libraries**: Azure.Messaging.ServiceBus, Azure.AI.OpenAI, Npgsql, Microsoft.Extensions.Configuration
